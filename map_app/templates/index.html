@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Songs Map</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #4caf50;
+            color: white;
+            padding: 20px 10px;
+        }
+        header h1 {
+            margin: 0;
+        }
+        .content {
+            padding: 20px;
+        }
+        .map-container {
+            margin: 20px auto;
+            width: 80%;
+            height: 500px;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Explore Today's Top Songs</h1>
+    </header>
+    <div class="content">
+        <p>Discover today's most popular songs around the world! Click through the interactive map to see analytics, or connect your Spotify account to generate a custom playlist.</p>
+        <div class="map-container">
+            <iframe src="/map"></iframe>
+        </div>
+    </div>
+</body>
+</html>
+

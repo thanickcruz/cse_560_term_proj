@@ -1,0 +1,35 @@
+# Spotify Global Top 50 EDA
+
+## DB Connection + Dataframe Creation
+
+```{r}
+library(DBI)
+library(RPostgres)
+
+library(stringr)
+
+# Connect to the database
+con <- dbConnect(
+  RPostgres::Postgres(),
+  dbname = "postgres",
+  host = "localhost",
+  port = 5432,
+  user = "postgres", # in practice, HIDE THIS
+  password = "password" # in practice, HIDE THIS
+)
+
+# List tables
+tables <- dbListTables(con)
+print(tables)
+
+# Run a query
+playlists <- dbGetQuery(con, "SELECT * FROM playlists;")
+
+# Disconnect
+dbDisconnect(con)
+```
+
+```{r}
+playlists$country <- str_remove(playlists$name, "Top 50 - ")
+View(playlists)
+```
