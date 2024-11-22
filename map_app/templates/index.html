@@ -32,6 +32,19 @@
             height: 100%;
             border: none;
         }
+        #query-results {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .result-row {
+            margin-bottom: 10px;
+        }
+        .result-row p {
+            margin: 5px 0;
+        }
     </style>
 </head>
 <body>
@@ -39,10 +52,19 @@
         <h1>Explore Today's Top Songs</h1>
     </header>
     <div class="content">
-        <p>Discover today's most popular songs around the world! Click through the interactive map to see analytics, or connect your Spotify account to generate a custom playlist.</p>
+        <p>Discover today's most popular songs around the world!</p>
         <div class="map-container">
             <iframe src="/map"></iframe>
         </div>
+        <div id="query-results">
+            <div id="country-header">
+                <h3></h3>
+            </div>
+            <div id="results-content">
+                <p>Select a country to see the top track.</p>
+            </div>
+        </div>
+        
     </div>
 </body>
 </html>
