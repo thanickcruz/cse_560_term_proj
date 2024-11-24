@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="/static/styles.css"> <!-- Optional: Add your styles -->
+</head>
+<body>
+    <header>
+        <h1>Leaderboard</h1>
+        <nav>
+            <a href="/">Home</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Top 10 Tracks</h2>
+        <div id="leaderboard">
+            <p>Loading top tracks...</p>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Crue Unc
+        </p>
+    </footer>
+    <script>
+        // Fetch the top tracks data from the server
+        fetch('/query-leaderboard')
+            .then(response => response.json())
+            .then(data => {
+                const leaderboardDiv = document.getElementById('leaderboard');
+                if (data.result) {
+                    // Create a table to display the data
+                    const table = document.createElement('table');
+                    table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>Track</th>
+                                <th>Artist</th>
+                                <th>Popularity</th>
+                                <th>Countries Trending</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.result.map(row => `
+                                <tr>
+                                    <td>${row.track_name}</td>
+                                    <td>${row.artist_name}</td>
+                                    <td>${row.current_popularity}</td>
+                                    <td>${row.country_count}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    `;
+                    leaderboardDiv.innerHTML = ''; // Clear loading message
+                    leaderboardDiv.appendChild(table);
+                } else {
+                    leaderboardDiv.innerHTML = `<p>${data.error || 'No tracks found'}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching leaderboard data:', error);
+                const leaderboardDiv = document.getElementById('leaderboard');
+                leaderboardDiv.innerHTML = '<p>Error loading leaderboard. Please try again later.</p>';
+            });
+    </script>
+</body>
+</html>
+

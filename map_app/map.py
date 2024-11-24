@@ -96,7 +96,7 @@ def append_click_event_to_onEachFeature(html_file):
                                 <p><strong>Track:</strong> ${row.track_name} by ${row.artist_name}</p>
                                 <p><strong>Genre:</strong> ${row.genre}</p>
                                 <p><strong>Duration:</strong> ${row.duration_ms} ms</p>
-                                <p><strong>Release Date:</strong> ${row.date_released}</p>
+                                <p><strong>Chart Date:</strong> ${row.date_released}</p>
                                 <hr>
                             `;
                             resultsContainer.appendChild(rowDiv);
