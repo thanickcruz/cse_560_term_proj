@@ -75,137 +75,165 @@ h2 {
 }
 */
 
-/* General body styling */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f3f3f3; /* Light neutral background */
-    color: #333333; /* Dark text for readability */
+/* General Reset */
+body, h1, h2, h3, p, a, div, table, th, td {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
-/* Header section */
+/* Body and General Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #1a001a; /* Deep purple-pink background */
+    color: #ffe6ff; /* Light pink text */
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+/* Header Styling */
 header {
-    background-color: #d30f3f; /* Bold red like Bruno Mars' classic style */
-    color: #fff;
+    background-color: #330033; /* Rich dark pink for contrast */
+    padding: 20px;
     text-align: center;
-    padding: 50px 20px;
-    font-size: 3em;
-    text-transform: uppercase;
-    font-weight: bold;
-    letter-spacing: 2px;
+    border-bottom: 3px solid #ff33cc; /* Vibrant pink border */
 }
 
-/* Hero section with a retro vibe */
-.hero {
-    background-image: url('https://example.com/hero-bg.jpg'); /* You can replace this with an actual image */
-    background-size: cover;
-    background-position: center;
-    height: 500px;
-    text-align: center;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2.5em;
-    font-weight: bold;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+header h1 {
+    font-size: 2.5rem;
+    color: #ff66ff; /* Bright pink accent */
+    text-shadow: 2px 2px #990099; /* Subtle shadow for depth */
 }
 
-/* Button with elegant vibes for ROSÉ */
-button {
-    background-color: #fc9ac3; /* Soft pink for ROSÉ's elegance */
-    color: #fff;
-    padding: 15px 30px;
-    font-size: 1.2em;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
+/* Navigation Styling */
+nav {
+    margin: 15px 0;
+    text-align: center;
+}
+
+nav a {
+    color: #ff99ff; /* Light pink accent */
+    text-decoration: none;
+    font-size: 1.2rem;
+    margin: 0 15px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    background-color: #4d004d; /* Slightly lighter pink background */
     transition: all 0.3s ease;
 }
 
-button:hover {
-    background-color: #e7578c; /* Darker pink on hover */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+nav a:hover {
+    background-color: #ff66cc; /* Bright pink hover effect */
+    color: #fff; /* White text on hover */
 }
 
-/* Main content area */
-.main-content {
-    padding: 40px 20px;
-    text-align: center;
-    background-color: #ffffff;
-    margin-top: -50px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
-
-h2 {
-    font-size: 2.2em;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-p {
-    font-size: 1.1em;
-    color: #666;
-    line-height: 1.8;
-}
-
-/* Create a retro vibe for track cards */
-.track-card {
-    background-color: #ffd700; /* Gold background for a retro feel */
-    color: #333;
-    border-radius: 15px;
+/* Content Section Styling */
+.content {
     padding: 20px;
-    margin: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    display: inline-block;
-    width: 250px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.content p {
+    font-size: 1.1rem;
+    color: #ffd1ff; /* Softer pink */
+}
+
+.map-container {
+    margin-top: 20px;
+    border: 3px solid #ff66ff; /* Bright pink border */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+}
+
+/* Query Results Styling */
+#query-results {
+    margin-top: 20px;
+    background-color: #290029; /* Dark pinkish-purple */
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+#query-results h3 {
+    color: #ff99ff; /* Light pink accent */
+}
+
+#results-content p {
+    color: #ffe6ff;
+    font-size: 1rem;
+}
+
+/* Leaderboard Section Styling */
+#leaderboard {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #330033;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table thead {
+    background-color: #4d004d; /* Deep pinkish-purple */
+}
+
+table th, table td {
+    padding: 10px;
     text-align: left;
+    border-bottom: 1px solid #660066; /* Subtle pink border */
 }
 
-.track-card h3 {
-    font-size: 1.6em;
-    margin-bottom: 10px;
-    color: #333;
+table th {
+    color: #ff33cc; /* Vibrant pink text */
 }
 
-.track-card p {
-    font-size: 1.1em;
-    color: #555;
+table tr:hover {
+    background-color: #4d004d; /* Highlight row with deep pinkish-purple */
 }
 
-.track-card .artist-name {
-    font-size: 1.2em;
-    color: #d30f3f; /* Red for Bruno Mars' style */
-}
-
-/* Footer with ROSÉ's subtle elegance */
+/* Footer Styling */
 footer {
-    background-color: #2c2c2c; /* Dark background for contrast */
-    color: #fff;
     text-align: center;
-    padding: 30px 0;
-    font-size: 1.1em;
+    padding: 20px;
+    background-color: #330033;
+    border-top: 3px solid #ff33cc; /* Vibrant pink border */
+    color: #ffccff; /* Light pink text */
 }
 
-/* Smooth hover effect for track cards */
-.track-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+footer p {
+    font-size: 0.9rem;
 }
 
-/* Media Query for smaller screens */
-@media screen and (max-width: 768px) {
-    .hero {
-        font-size: 1.8em;
+/* Media Queries */
+@media (max-width: 768px) {
+    .content, #leaderboard {
+        padding: 10px;
     }
 
-    .track-card {
-        width: 100%;
-        margin-bottom: 20px;
+    header h1 {
+        font-size: 1.5rem;
     }
 
-    h2 {
-        font-size: 1.8em;
+    nav a {
+        font-size: 1rem;
+    }
+
+    table th, table td {
+        font-size: 0.9rem;
     }
 }

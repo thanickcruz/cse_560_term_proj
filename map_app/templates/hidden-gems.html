@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaderboard</title>
+    <title>Hidden Gems</title>
     <link rel="stylesheet" href="/static/styles.css"> <!-- Optional: Add your styles -->
     <script>
         function displayTodayDate() {
@@ -16,15 +16,15 @@
 </head>
 <body onload="displayTodayDate()"> <!-- Trigger displayTodayDate when the page loads -->
     <header>
-        <h1>Leaderboard</h1>
+        <h1>Hidden Gems</h1>
         <nav>
             <a href="/">Home</a>
         </nav>
     </header>
     <main>
         <h2><span id="today-date"></span></h2> <!-- Date will populate here -->
-        <div id="leaderboard">
-            <p>Loading top tracks...</p>
+        <div id="hidden-gems">
+            <p>Loading tracks...</p>
         </div>
     </main>
 </body>
@@ -34,10 +34,10 @@
     </footer>
     <script>
         // Fetch the top tracks data from the server
-        fetch('/query-leaderboard')
+        fetch('/query-hidden-gems')
             .then(response => response.json())
             .then(data => {
-                const leaderboardDiv = document.getElementById('leaderboard');
+                const hgDiv = document.getElementById('hidden-gems');
                 if (data.result) {
                     // Create a table to display the data
                     const table = document.createElement('table');
@@ -61,16 +61,16 @@
                             `).join('')}
                         </tbody>
                     `;
-                    leaderboardDiv.innerHTML = ''; // Clear loading message
-                    leaderboardDiv.appendChild(table);
+                    hgDiv.innerHTML = ''; // Clear loading message
+                    hgDiv.appendChild(table);
                 } else {
-                    leaderboardDiv.innerHTML = `<p>${data.error || 'No tracks found'}</p>`;
+                    hgDiv.innerHTML = `<p>${data.error || 'No tracks found'}</p>`;
                 }
             })
             .catch(error => {
-                console.error('Error fetching leaderboard data:', error);
-                const leaderboardDiv = document.getElementById('leaderboard');
-                leaderboardDiv.innerHTML = '<p>Error loading leaderboard. Please try again later.</p>';
+                console.error('Error fetching hidden gems data:', error);
+                const hgDiv = document.getElementById('hidden-gems');
+                hgDiv.innerHTML = '<p>Error loading hidden gems. Please try again later.</p>';
             });
     </script>
 </body>

@@ -9,7 +9,7 @@ print('Creating Folium map...')
 # Initialize the map
 map = folium.Map(location=[20, 0],
                  zoom_start=2, 
-                 tiles="CartoDB Positron",
+                 tiles="Cartodb Voyager",
                  max_bounds=True)
 
 # Download GeoJSON data for countries
