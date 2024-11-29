@@ -1,0 +1,349 @@
+---
+title: ''
+output:
+  powerpoint_presentation:
+    reference_doc: ub_template.pptx
+  slidy_presentation: default
+  ioslides_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# ---- Library Imports ----
+library(RSQLite)
+library(DBI)
+library(ggplot2)
+library(kableExtra)
+library(tidyverse)
+library(cluster)
+library(magrittr)
+library(plotly)
+library(caret)
+library(ggbiplot)
+library(cowplot)
+library(janitor)
+library(patchwork)
+library(ggdendro)
+library(ISLR2)
+library(datawizard)
+library(ggplot2)
+library(dendextend)
+library(data.table)
+library(factoextra)
+library(graphics)
+
+# ---- Setting seed = 1 for reproducibility ----
+set.seed(1)
+```
+
+```{r Data pull, echo = FALSE, message = FALSE, warning = FALSE}
+# SQL Data base connection & data pull
+conn <- dbConnect(RSQLite::SQLite(), "SpotifyData.db")      # This line connects to our database
+
+# Pulling data into environment
+sql <- "
+-- This data was used to pull information on tracks and what countries they are popular in for a project on Clustering!
+WITH count_track_nbr_of_countries AS(
+    SELECT DISTINCT
+  	  track_id
+      ,COUNT(name) AS num_countries
+    FROM Playlists
+    GROUP BY track_id
+  )
+  
+SELECT  
+	Playlists.name
+	,count_track_nbr_of_countries.num_countries
+	,Tracks.duration_ms
+	,Tracks.explicit
+	,Tracks.current_popularity
+	,Tracks.acousticness
+	,Tracks.danceability
+	,Tracks.instrumentalness
+	,Tracks.key_signature
+	,Tracks.mode
+	,Tracks.tempo
+	,Tracks.time_signature
+	,Tracks.valence
+FROM Playlists
+JOIN Tracks
+	ON Tracks.track_id = Playlists.track_id
+JOIN count_track_nbr_of_countries
+	ON count_track_nbr_of_countries.track_id = Playlists.track_id;
+"
+
+# Get data
+data <- dbGetQuery(conn, sql)
+data$mode <- as.integer(data$mode)
+```
+
+```{r Create Standardized Data, echo = FALSE, message = FALSE, warning = FALSE}
+# Standardized
+data_std <- standardize(data)
+```
+
+# Group 1 - Clustering Methods for Spotify Song Data
+Jason Caballes
+
+Nick Cruz
+
+Sean Grzenda
+
+Karthik Sri Sakthi Degala
+
+# Objective 
+Our goal is to perform clustering algorithms, i.e. K-means and hierarchical K-means to 
+try and  unveil potential similarities among the most popular songs today across the globe. 
+We want to see if favorable music from each country will naturally form clusters.
+
+We may cluster tracks based on their musical attributes to see if tracks within the clusters 
+are more popular in certain countries. Clustering tracks may also allow us to generate playlists,
+such as Spotify’s own recommendation systems
+
+
+# Methods Used 
+Created a database file containing the top tracks from 67 countries
+
+we explored the following for analysis: 
+
+* Hierarchical Clustering  and Dendrograms  
+* Elbow method
+* Gap Statistic
+* Silhouette
+* K-Means Clustering
+* PCA to provide a two-dimensional visualization of the clusters
+
+
+# Hierarchical Clustering and Dendrograms
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+# Find distances
+x_dist <- dist(data)
+
+# Complete method
+hc_complete <- hclust(x_dist, method = "complete")
+
+# Average Method
+hc_average <- hclust(x_dist, method = "average")
+
+# Initial Dendrogram
+linkage_dendro <- ggdendrogram(hc_complete, rotate=T, labels=F) + ggtitle('Complete Linkage Dendrogram')
+average_dendro <- ggdendrogram(hc_average, rotate=T, labels=F) + ggtitle('Average Linkage Dendrogram')
+
+# Create subplot
+dendros <- linkage_dendro / average_dendro 
+
+# Output dendrograms
+dendros
+```
+
+
+# Elbow Method to find Optimal Clusters
+
+
+Elbow Method Overview
+
+1. Identifies optimal clusters in k-means by locating the "elbow" point.
+2. Elbow point: Where WCSS decrease shifts markedly.
+
+Analysis of Spotify Data
+
+1. No clear elbow observed in the plot.
+2. Implication: Data may not naturally form distinct clusters.
+3. Possible complexity in the clustering structure.
+
+
+# Elbow Method to find Optimal Clusters
+
+```{r Elbow Method, echo = FALSE, message = FALSE, warning = FALSE}
+# Remove name field as we only require numerical data
+data_no_strings <- data |> select(-c("name"))
+
+# Scale the data
+df_scale <- scale(data_no_strings)
+
+# Create Elbow Plots
+km_out_list <- lapply(1:20, function(k) list(
+  k=k,
+  km_out=kmeans(df_scale, k, nstart = 20)))
+
+km_results <- data.frame(
+  k=sapply(km_out_list, function(k) k$k),
+  totss=sapply(km_out_list, function(k) k$km_out$totss),
+  tot_withinss=sapply(km_out_list, function(k) k$km_out$tot.withinss)
+  )
+
+fig <- plot_ly(km_results,x=~k,y=~tot_withinss) |> add_markers() |> add_paths() |> layout(title="Elbow Plot")
+fig
+```
+
+
+# Gap statistic to Find optimal Clusters
+
+Gap Statistic Overview
+
+1. Measures optimal clusters by comparing within-cluster variation to a null reference.
+2. Assesses against expected values under null distribution.
+
+Optimal Clusters Identified
+
+1. Gap statistic suggests optimal clusters: 2, 4, 9, 16.
+2. Explore each cluster solution's impact on data insights.
+3. Assess how different cluster counts influence predictions.
+
+
+
+# Gap Statistic to find Optimal Clusters
+```{r Gap, echo = FALSE, message = FALSE, warning = FALSE}
+gap_kmeans <- clusGap(df_scale, kmeans, nstart = 20, K.max = 20, B = 20)
+
+plot(gap_kmeans, main = "Gap Statistic: kmeans")
+```
+
+
+# Silhouette to find Optimal Clusters
+
+Silhouette Method Overview
+
+1. Calculates the silhouette score for each data point.
+2. Measures closeness within a cluster versus neighboring clusters.
+
+Optimal Cluster Numbers
+
+1. Silhouette method identifies optimal clusters: 8, 13, 19.
+2. Higher silhouette scores at these clusters.
+3. Indicates better separation and cohesion among clusters.
+
+
+# Silhouette to find Optimal Clusters
+```{r Silhouette, echo = FALSE, message = FALSE, warning = FALSE}
+fviz_nbclust(df_scale, kmeans, method = "silhouette", nboot = 20, k.max=20, nstart=20, iter.max=40) + labs(subtitle = "Silhouette method")
+```
+
+
+# PCA
+
+PCA simplifies data by transforming related variables into uncorrelated ones.
+Resulting components capture key patterns and variance.
+Ideal for reducing complexity in large datasets.
+
+
+# PCA
+
+```{r PCA, echo = FALSE, message = FALSE, warning = FALSE}
+# Run PCA on df_scale, make biplot and scree plot/percentage variance explained plot
+# save as pc_out, we will use pc_out$x[,1] and pc_out$x[,2] later for plotting
+
+pc.out <- prcomp(subset(data_std, select = -name))
+
+# biplot
+#biplot(pc.out,scale=0)
+
+# skree plot
+PVE <- tibble(
+  PC=1:length(pc.out$sdev),
+  Var=pc.out$sdev^2,
+  PVE=Var/sum(Var),
+  CumPVE=cumsum(PVE)
+)
+cowplot::plot_grid(
+qplot(data=PVE,x=PC,y=PVE,geom=c("point","line"),
+      xlab = "Principal Component",
+      ylab = "Proportion of Variance Explained"),
+qplot(data=PVE,x=PC,y=CumPVE,geom=c("point","line"),
+      xlab = "Principal Component",
+      ylab = "Cumulative Proportion of Variance Explained")
+) 
+```
+
+
+# PCA Plot of K-Means Clusters
+
+```{r Plotting Clusters, echo = FALSE, message = FALSE, warning = FALSE}
+# ---- Running the k-means algorithms based of optimal K from metrics ----
+
+# Applying k means with 67 clusters
+# This is is an attempt to mimic the 67 playlists, but with k-means
+km.out.67 = kmeans(df_scale,67)
+df_clustered_67=as.data.frame(df_scale)
+df_clustered_67$cluster = as.factor(km.out.67$cluster)
+
+# Silhouette
+km.out.19 = kmeans(df_scale,19)
+df_clustered_19=as.data.frame(df_scale)
+df_clustered_19$cluster=as.factor(km.out.19$cluster)
+
+# Gap statistics
+km.out.9 = kmeans(df_scale,9)
+df_clustered_9=as.data.frame(df_scale)
+df_clustered_9$cluster=as.factor(km.out.9$cluster)
+
+# elbow 
+km.out.5 = kmeans(df_scale,5)
+df_clustered_5=as.data.frame(df_scale)
+df_clustered_5$cluster = as.factor(km.out.5$cluster)
+
+# ---- Creating figures ----
+playlist_plot <- ggbiplot(pc.out, scale=0, groups=data$name, var.axes=F,
+                          point.size=0.5) |> ggplotly() |> layout(showlegend = FALSE)
+
+k_means_67_plot <- ggbiplot(pc.out, scale=0, groups=df_clustered_67$cluster, 
+                  var.axes=F, point.size=0.5) |> ggplotly() |> layout(showlegend = FALSE)
+
+silhouette_plot <- ggbiplot(pc.out,scale=0, groups=df_clustered_19$cluster,
+                  var.axes=F, point.size=0.5) |> ggplotly() |> layout(showlegend = FALSE)
+
+gap_plot <- ggbiplot(pc.out,scale=0, groups=df_clustered_9$cluster,
+                var.axes=F, point.size=0.5) |> ggplotly() |> layout(showlegend = FALSE)
+
+elbow_plot <- ggbiplot(pc.out, scale=0, groups=df_clustered_5$cluster,
+                  var.axes=F, point.size=0.5) |> ggplotly() |> layout(showlegend = FALSE)
+
+```
+
+
+```{r Plotting k-means vs original data, echo = FALSE, message = FALSE, warning = FALSE}
+subplot(playlist_plot, k_means_67_plot, nrows=2, shareX=T) |>
+  layout(annotations=list(
+    list(y=1.0, text="Plot of Tracks and their Countries", showarrow=F, xref='paper', yref='paper'), 
+    list(text="Plot of K-Means to Group Tracks", showarrow=F, xref='paper', yref='paper'))
+  ) 
+```
+
+\
+
+```{r various optimal Ks, echo = FALSE, message = FALSE, warning = FALSE}
+subplot(silhouette_plot, elbow_plot, gap_plot, nrows=2, shareX=T) |>
+  layout(annotations=list(
+    list(x=0.2, y=1.0, text="Silhouette", showarrow=F, xref='paper', yref='paper'), 
+    list(x=0.8, y=1.0, text="Elbow", showarrow=F, xref='paper', yref='paper'),
+    list(x=0.2, text="Gap", showarrow=F, xref='paper', yref='paper'))
+    )
+```
+
+
+# Distribution of countries Between clusters
+
+```{r barPlots, echo = FALSE, message = FALSE, warning = FALSE}
+df_clustered_5$countries <- data$name
+
+figure <- ggplot(df_clustered_5, aes(x = as.factor(cluster), fill = countries)) + geom_bar() + theme(legend.position = 'none') + xlab("Cluster") + ylab("Number of instances of a country")
+ggplotly(figure)
+```
+
+
+# Summary
+
+
+1. Gap statistics identified optimal clusters as 2, 4, 9, and 16.
+2. Silhouette method suggested optimal clusters as 8, 13, and 19.
+3. Chose to test clusters at 5, 9, 19 and 67 (total countries).
+4. Clusters at 5 and 9 showed decent differentiation on PCA plots.
+5. Cluster at 19 provided good results with visible grouping, though not all clusters were distinct.
+6. Cluster at 67 (equal to the number of countries) performed poorly, mirroring the initial country-based results.
+
+# Conclusion
+
+The answer to the original question is unfortunately no, songs do not cluster by country. In fact, the optimal number of clusters is nowhere close to the number of countries. 
