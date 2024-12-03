@@ -34,33 +34,48 @@ def hidden_gems():
 def query_country(country_name):
     """Query the database for information about the specified country."""
     query = """
-    select name,
-	    	playlists.track_id track_id,
-		    playlists.track_name track_name,
-		    duration_ms,
-		    explicit,
-		    current_popularity,
-		    acousticness,
-		    danceability,
-		    instrumentalness,
-		    key_signature,
-		    mode,
-		    tempo,
-		    time_signature,
-		    valence,
-		    date_released,
-		    artists.artist_id artist_id,
-		    artists.artist_name artist_name,
-		    genre
-    from playlists
-    join tracks on playlists.track_id=tracks.track_id
-    join albums on playlists.album_id=albums.album_id
-    join trackartists ta on playlists.track_id=ta.track_id
-    join genreartists ga on ta.artist_id=ga.artist_id
-    join artists on ga.artist_id=artists.artist_id
-    where name like %s
-    order by current_popularity desc
-    limit 1;
+    SELECT 
+        name,
+        playlists.track_id AS track_id,
+        playlists.track_name AS track_name,
+        duration_ms,
+        explicit,
+        current_popularity,
+        acousticness,
+        danceability,
+        instrumentalness,
+        key_signature,
+        mode,
+        tempo,
+        time_signature,
+        valence,
+        date_released,
+        STRING_AGG(artists.artist_id::text, ', ') AS artist_ids,  -- Aggregate artist IDs
+        STRING_AGG(artists.artist_name, ', ') AS artist_names    -- Aggregate artist names
+    FROM playlists
+    JOIN tracks ON playlists.track_id = tracks.track_id
+    JOIN albums ON playlists.album_id = albums.album_id
+    JOIN trackartists ta ON playlists.track_id = ta.track_id
+    JOIN artists ON ta.artist_id = artists.artist_id
+    WHERE name LIKE %s
+    GROUP BY 
+        name,
+        playlists.track_id,
+        playlists.track_name,
+        duration_ms,
+        explicit,
+        current_popularity,
+        acousticness,
+        danceability,
+        instrumentalness,
+        key_signature,
+        mode,
+        tempo,
+        time_signature,
+        valence,
+        date_released
+    ORDER BY current_popularity DESC
+    LIMIT 1;
     """
     try:
         # Connect to the PostgreSQL database

@@ -5,8 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top Songs Map</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        function displayTodayDate() {
+            const today = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' }; // Format: November 25, 2024
+            const formattedDate = today.toLocaleDateString('en-US', options);
+            document.getElementById('today-date').textContent = formattedDate;
+        }
+    </script>
 </head>
-<body>
+<body onload="displayTodayDate()">
     <header>
         <h1>Explore Today's Top Songs</h1>
         <nav>
@@ -15,6 +23,7 @@
         </nav>
     </header>
     <div class="content">
+        <h2><span id="today-date"></span></h2>
         <p>Discover today's most popular songs around the world!</p>
         <div class="map-container">
             <iframe src="/map"></iframe>
